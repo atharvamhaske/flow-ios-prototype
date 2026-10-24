@@ -1,60 +1,33 @@
 # Rello
 
-A SwiftUI UI prototype for payments and shared expenses. Bundled Inter typography, white, soft lavender and pale lime; native sheets, press feedback and an animated demo receipt with Reduce Motion support.
+A SwiftUI payment companion and local expense prototype. White, lavender and lime UI with bundled Inter typography.
 
-Open `Flow.xcodeproj` in full Xcode. Select the Rello target, an iPhone Simulator and Run. For a physical iPhone, select your Personal Team under Signing & Capabilities. iOS 17+; macOS 14+.
+## Guided iPhone Payments
 
-The adjacent `Rello Preview.app` is a locally signed Apple Silicon Mac build. It is not notarized or intended for distribution.
+Pay someone now opens a guided UPI 123PAY flow using the service number 9188123123 published by [PNB](https://www.pnb.bank.in/UPI-One-Two-Three-Pay.html), checked on 24 October 2026. Support for your particular bank, SIM and recipient must be verified with the service. This is not a direct banking API integration.
 
-## Available
+1. Open `Flow.xcodeproj` in full Xcode. Select the Rello target, your Personal Team under Signing & Capabilities, and a connected physical iPhone. Follow Xcode’s device setup prompts and Run.
+2. Use your bank-registered SIM with cellular service. Open Pay someone, enter the recipient’s 10-digit mobile number and amount, then review.
+3. Read the linked official instructions and acknowledge that the service can transfer real money. Tap Call 123PAY and confirm the iOS phone prompt.
+4. Follow the voice service to select or set up a supported bank account. Enter the recipient and amount again in the call; Rello does not send them automatically. Verify the recipient and amount before authorizing.
+5. Enter bank credentials only in the official service, never in Rello. Return to Rello and choose Paid, Failed or Not sure in the attempt history.
 
-- Home and locally persisted activity, starting empty. Recent people come from your own entries.
-- Demo payment: recipient, amount, review, animated receipt.
-- Equal-split preview with exact paise allocation and local expense recording.
+No call or real transfer has been tested by the developer. Full Xcode is not installed in the current development environment, so the iOS-specific code still requires device compilation and validation. Mac and Simulator disable calling. The adjacent local `Rello Preview.app` supports inspecting the guide and local history; it is not included in GitHub.
 
-## Test Now
+## Local Payment-Attempt History
 
-The current build tests the UI and local storage only. It cannot send money to a mobile number or UPI ID, launch a payment app, or confirm a bank payment.
+Before requesting a call, Rello atomically saves a unique attempt ID, recipient, amount and timestamp in Application Support/Rello/call-attempts.json. If saving fails, the call does not start. Corrupt history is preserved and blocks new calls.
 
-### On This Mac
+The initial state is Awaiting confirmation. Users can record Reported paid, Reported failed or Not sure; each change appends a timestamped event. Results are labelled Reported by you, never bank-confirmed. Opening or ending a call does not prove a transfer occurred. Check bank/service history before retrying an uncertain payment to avoid duplicates.
 
-1. Open the adjacent `Rello Preview.app` in the local outputs folder. The prebuilt app is not included in this GitHub repository.
-2. Select `Pay someone`, enter a recipient label and a small demo amount such as ₹1, then review and confirm the demo payment.
-3. Check the animated receipt and the new entry under Activity. No money moves.
-4. Quit and reopen the app to check that the entry persists.
-5. Try `Split a bill`, enter ₹100 and three people, and check that the shares total ₹100.
-6. Turn off Wi-Fi and repeat a demo payment or expense entry. Local recording should still work; this does not demonstrate offline UPI.
+Reopen Pay someone to see previous attempts and update their status. This history is currently separate from the home Activity tab, which holds local expenses and older demo entries. The app cannot read bank SMS, discover payments made elsewhere, or independently verify an outcome. Screenshot attachments and manual reference entry are not implemented.
 
-A fresh installation starts empty. Existing user-created entries remain on this device. Invalid or zero amounts should prevent continuing to review.
+History and expense recording work without internet. The phone service requires cellular connectivity; carrier charges may apply. No-network money transfer is not supported.
 
-### On iPhone Or Simulator
+## Local Checks
 
-Open `Flow.xcodeproj` in full Xcode, select the Rello target and an iPhone Simulator, then Run. For a physical iPhone, connect the device, select your Personal Team under Signing & Capabilities, choose the device as the run destination, and follow Xcode's signing and device setup prompts.
+Run `./check.sh` for amount validation, split conservation checks and native Mac compilation. On Mac, review a recipient and amount and confirm that calling is disabled. On iPhone, test cancelling the system phone prompt, returning from a call, recording Not sure, and reopening the app to verify history persistence. Do not interpret any user-reported status as bank confirmation.
 
-Full Xcode is required; Command Line Tools alone cannot build this iPhone app. iPhone execution has not yet been verified. The same demo-only limitation applies on iPhone.
+Equal-split previews record local expenses. Shared groups, named-member balances, QR scanning, automatic bank linking and provider verification are not implemented.
 
-## Planned Local Payment-Attempt History
-
-This workaround is a proposed next feature, not part of the current build. Current activity contains only recorded expenses and simulated payments.
-
-- Before opening a UPI app or starting a payment call, save the recipient, amount, timestamp, and a unique attempt ID locally.
-- When the user returns, ask: “Paid”, “Failed”, or “Not sure”.
-- Label the answer “Reported by you”, separate from any bank-confirmed status. “Not sure” or no answer leaves the attempt awaiting confirmation.
-- Optionally allow a receipt screenshot attachment or a manually entered UPI reference number.
-- Keep the log on the device so history can be viewed and updated without internet.
-
-The timeline would show “Awaiting confirmation”, “Reported paid”, and “Reported failed”. Returning to Rello, closing a payment app, or losing connectivity must never automatically imply success or failure.
-
-This records attempts started through Rello. It will not automatically discover payments made elsewhere. Screenshots and manually entered reference numbers are supporting evidence, not bank verification. Verified status requires a supported payment provider integration.
-
-Offline history is not offline money transfer. Payment-app handoff and phone-call payment support also still need implementation.
-
-## Limits
-
-No real UPI transfers, bank connection, QR scanner, group sync or per-person debt ledger yet. Transfers are explicitly simulated. Groups show an empty state until group support is implemented. Legacy seeded activity is removed on load; user-created entries are preserved. iPhone builds and interactive UI tests require full Xcode and remain unverified here.
-
-Run `./check.sh` for amount/split checks and Mac compilation. UI inspiration: the supplied screenshots and Emil Kowalski's design engineering, library selection and Swift skills. His web libraries are translated into native SwiftUI patterns; no web dependency is bundled. Appinspo's generator was inspected but did not produce a skill in this session.
-
-Inter is bundled under the SIL Open Font License; see `Flow/Resources/OFL.txt`. Interaction motion uses shared 140–280 ms timing curves; the one-shot receipt reveal lasts 500 ms and respects Reduce Motion.
-
-Payment-card artwork is an AI-generated bundled asset. The receipt dispenser is native SwiftUI, with a static Reduce Motion state.
+Inter is bundled under the SIL Open Font License: `Flow/Resources/OFL.txt`. Payment artwork is AI-generated. UI inspiration includes the supplied references and Emil Kowalski’s design engineering guidance. The retained demo receipt component respects Reduce Motion; the real call flow does not display a simulated success receipt.
