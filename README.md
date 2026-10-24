@@ -2,6 +2,16 @@
 
 A SwiftUI payment companion and local expense prototype. White, lavender and lime UI with bundled Inter typography.
 
+## UI Preview
+
+Current SwiftUI home screen, rendered locally with empty activity. This image shows the interface, not a verified bank connection or successful payment.
+
+<img src="docs/images/rello-home.png" alt="Rello home screen with lavender and lime cards, zero shared spending and empty activity" width="360" />
+
+## In-App Banking Goal
+
+The intended experience is bank linking and payment authorization within Rello. This is not implemented. It requires an authorized UPI integration through a PSP bank and applicable NPCI onboarding, certification and approvals. The existing 123PAY call route below is an interim implementation, not that in-app experience. No bank partnership or production payment credentials are configured.
+
 ## Guided iPhone Payments
 
 Pay someone now opens a guided UPI 123PAY flow using the service number 9188123123 published by [PNB](https://www.pnb.bank.in/UPI-One-Two-Three-Pay.html), checked on 24 October 2026. Support for your particular bank, SIM and recipient must be verified with the service. This is not a direct banking API integration.
