@@ -2,6 +2,16 @@
 
 A SwiftUI payment companion and local expense prototype. White, lavender and lime UI with bundled Inter typography.
 
+## PWA Companion
+
+Try Rello in iPhone Safari without Xcode:
+
+- [PWA source repository](https://github.com/atharvamhaske/rello-pwa)
+- [Open the hosted PWA](https://rello-payment-lab.cld-9-2499.chatgpt.site/) · invited-account sign-in required
+- [PWA screenshots, user guide and limitations](https://github.com/atharvamhaske/rello-pwa#readme)
+
+The PWA is maintained separately from this SwiftUI app. It supports demo payments, local expenses and an experimental Google Pay handoff. Direct bank linking and verified real-money processing are not implemented.
+
 ## UI Preview
 
 Current SwiftUI home screen, rendered locally with empty activity. This image shows the interface, not a verified bank connection or successful payment.
