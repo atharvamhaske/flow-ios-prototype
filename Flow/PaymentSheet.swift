@@ -114,7 +114,8 @@ struct ReceiptView: View {
                 Text("Demo payment complete").font(Typeface.font(14)).foregroundStyle(Palette.muted)
             }
             Text(money(amount)).font(Typeface.font(48, weight: .medium)).minimumScaleFactor(0.5).lineLimit(1)
-            Text("to \(recipient)").font(Typeface.font(15)).foregroundStyle(Palette.muted)
+            Text(verbatim: "to " + recipient).font(Typeface.font(15)).foregroundStyle(Palette.muted)
+                .frame(maxWidth: .infinity, alignment: .center)
             HStack {
                 Text("PAYMENT TYPE").font(Typeface.font(10, weight: .medium)).tracking(1)
                 Spacer()
