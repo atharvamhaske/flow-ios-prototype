@@ -31,7 +31,7 @@ struct FlowHome: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
+                VStack(alignment: .leading, spacing: 24) {
                     header
                     switch tab {
                     case .home: home
@@ -67,7 +67,7 @@ struct FlowHome: View {
 
     var snapshot: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 28) { header; home }
+            VStack(alignment: .leading, spacing: 24) { header; home }
                 .padding(24)
             Spacer(minLength: 0)
             navigation
@@ -86,11 +86,11 @@ struct FlowHome: View {
     private var header: some View {
         HStack {
             HStack(spacing: 6) {
-                Image(systemName: "arrow.up.forward.circle.fill").font(.system(size: 25))
-                Text("flow").font(.system(size: 30, weight: .semibold, design: .rounded)).tracking(-1.6)
+                Image(systemName: "arrow.up.forward.circle.fill").font(Typeface.font(25, weight: .regular))
+                Text("flow").font(Typeface.font(30, weight: .semibold)).tracking(-1.6)
             }
             Spacer()
-            Text("LOCAL DEMO").font(.system(size: 9, weight: .semibold)).tracking(1.2)
+            Text("LOCAL DEMO").font(Typeface.font(9, weight: .semibold)).tracking(1.2)
                 .padding(.horizontal, 10).padding(.vertical, 8)
                 .background(Palette.surface, in: Capsule())
             Avatar(initials: "You", color: Palette.lime)
@@ -100,8 +100,8 @@ struct FlowHome: View {
     private var home: some View {
         Group {
             VStack(alignment: .leading, spacing: 5) {
-                Text("A little less owing.").foregroundStyle(Palette.muted)
-                Text("More living.").font(.system(size: 43, weight: .medium)).tracking(-2)
+                Text("PAY. SPLIT. ALL SQUARE.").font(Typeface.font(11, weight: .medium)).tracking(1.3).foregroundStyle(Palette.muted)
+                Text("Money, together.").font(Typeface.font(35, weight: .medium)).tracking(-1.2)
             }
             balanceCard
             HStack(spacing: 12) {
@@ -120,16 +120,16 @@ struct FlowHome: View {
                     Button { recipientName = ""; sheet = .pay } label: {
                         VStack(spacing: 8) {
                             Image(systemName: "plus").frame(width: 44, height: 44).background(Palette.surface, in: Circle())
-                            Text("Someone new").font(.system(size: 11))
+                            Text("Someone new").font(Typeface.font(11, weight: .regular))
                         }
                     }
                 }
             }
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Text("Lately").font(.system(size: 23, weight: .medium)).tracking(-0.6)
+                    Text("Recent activity").font(Typeface.font(23, weight: .medium)).tracking(-0.6)
                     Spacer()
-                    Button("View all") { tab = .activity }.font(.system(size: 12)).underline()
+                    Button("View all") { tab = .activity }.font(Typeface.font(12, weight: .regular)).underline()
                 }
                 ForEach(items.prefix(3)) { item in activityRow(item) }
             }
@@ -137,22 +137,22 @@ struct FlowHome: View {
     }
 
     private var balanceCard: some View {
-        VStack(alignment: .leading, spacing: 22) {
+        VStack(alignment: .leading, spacing: 18) {
             HStack {
-                Label("THE BIG PICTURE", systemImage: "circle.grid.2x2")
-                    .font(.system(size: 10, weight: .medium)).tracking(1.4)
+                Label("YOUR SHARED SPENDING", systemImage: "circle.grid.2x2")
+                    .font(Typeface.font(10, weight: .medium)).tracking(1.4)
                 Spacer()
-                Image(systemName: "arrow.up.right")
+                Image(systemName: "arrow.up.right").accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 4) {
-                Text("Shared spending").font(.system(size: 13))
+                Text("You paid across your expenses").font(Typeface.font(13))
                 Text(money(items.filter(\.isSplit).reduce(0) { $0 + $1.amount }))
-                    .font(.system(size: 43, weight: .medium, design: .rounded)).tracking(-2)
+                    .font(Typeface.font(35, weight: .medium)).tracking(-1.2)
                     .minimumScaleFactor(0.6).lineLimit(1).monospacedDigit()
                     .contentTransition(.numericText())
             }
             HStack {
-                Text("Good times. Fair shares.").font(.system(size: 12))
+                Text("Good times. Fair shares.").font(Typeface.font(12, weight: .regular))
                 Spacer()
                 HStack(spacing: -12) {
                     Avatar(initials: "AS", color: Palette.lime)
@@ -161,69 +161,69 @@ struct FlowHome: View {
                 }
             }
         }
-        .padding(24)
+        .padding(22)
         .background(Palette.lavender, in: RoundedRectangle(cornerRadius: 30))
     }
 
     private func quickAction(_ title: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 20) {
-                Image(systemName: icon).font(.system(size: 22, weight: .medium))
-                HStack { Text(title).font(.system(size: 14, weight: .medium)); Spacer() }
-            }.padding(20).frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 16) {
+                Image(systemName: icon).font(Typeface.font(22, weight: .medium))
+                HStack { Text(title).font(Typeface.font(14, weight: .medium)); Spacer() }
+            }.padding(18).frame(maxWidth: .infinity, alignment: .leading)
                 .background(color.opacity(0.6), in: RoundedRectangle(cornerRadius: 24))
         }
     }
 
     private func person(_ name: String, initials: String, color: Color) -> some View {
         Button { recipientName = name; sheet = .pay } label: {
-            VStack(spacing: 8) { Avatar(initials: initials, color: color); Text(name).font(.system(size: 11)) }
+            VStack(spacing: 8) { Avatar(initials: initials, color: color); Text(name).font(Typeface.font(11, weight: .regular)) }
         }
     }
 
     private func sectionTitle(_ title: String, trailing: String) -> some View {
         HStack {
-            Text(title).font(.system(size: 23, weight: .medium)).tracking(-0.6)
+            Text(title).font(Typeface.font(23, weight: .medium)).tracking(-0.6)
             Spacer()
-            Text(trailing).font(.system(size: 8, weight: .medium)).tracking(1).foregroundStyle(Palette.muted)
+            Text(trailing).font(Typeface.font(10, weight: .medium)).tracking(1).foregroundStyle(Palette.muted)
         }
     }
 
     private func activityRow(_ item: ActivityItem) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: item.symbol).font(.system(size: 19))
+            Image(systemName: item.symbol).font(Typeface.font(19, weight: .regular))
                 .frame(width: 44, height: 48)
                 .background(item.isSplit ? Palette.lavender.opacity(0.45) : Palette.lime.opacity(0.6), in: RoundedRectangle(cornerRadius: 15))
             VStack(alignment: .leading, spacing: 5) {
-                Text(item.title).font(.system(size: 14, weight: .medium))
-                Text(item.subtitle).font(.system(size: 10)).foregroundStyle(Palette.muted)
+                Text(item.title).font(Typeface.font(14, weight: .medium))
+                Text(item.subtitle).font(Typeface.font(10, weight: .regular)).foregroundStyle(Palette.muted)
             }
             Spacer(minLength: 5)
-            Text(money(item.amount)).font(.system(size: 14, weight: .medium)).monospacedDigit()
+            Text(money(item.amount)).font(Typeface.font(14, weight: .medium)).monospacedDigit()
         }.accessibilityElement(children: .combine)
     }
 
     private var groups: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Better\ntogether.").font(.system(size: 46, weight: .medium)).tracking(-2)
+            Text("Better\ntogether.").font(Typeface.font(46, weight: .medium)).tracking(-1.2)
             Text("Keep the memories. Split the rest.").foregroundStyle(Palette.muted)
             ForEach(Array(["Weekend people", "Our place"].enumerated()), id: \.offset) { index, title in
                 VStack(alignment: .leading, spacing: 24) {
-                    HStack { Image(systemName: index == 0 ? "sun.max" : "house").font(.system(size: 30)); Spacer(); Text("4 PEOPLE").font(.caption2).tracking(1) }
-                    Text(title).font(.system(size: 28, weight: .medium)).tracking(-1)
+                    HStack { Image(systemName: index == 0 ? "sun.max" : "house").font(Typeface.font(30, weight: .regular)); Spacer(); Text("4 PEOPLE").font(Typeface.font(11)).tracking(1) }
+                    Text(title).font(Typeface.font(28, weight: .medium)).tracking(-1)
                     Button { sheet = .split } label: {
-                        HStack { Text("Add a shared expense"); Spacer(); Image(systemName: "plus") }.font(.system(size: 13))
+                        HStack { Text("Add a shared expense"); Spacer(); Image(systemName: "plus") }.font(Typeface.font(13, weight: .regular))
                     }
                 }.padding(26).background(index == 0 ? Palette.lavender : Palette.lime, in: RoundedRectangle(cornerRadius: 28))
             }
             Text("Sample groups · Expenses are saved on this device.")
-                .font(.caption).foregroundStyle(Palette.muted)
+                .font(Typeface.font(12)).foregroundStyle(Palette.muted)
         }
     }
 
     private var activity: some View {
         VStack(alignment: .leading, spacing: 22) {
-            Text("Every little\nexchange.").font(.system(size: 43, weight: .medium)).tracking(-2)
+            Text("Every little\nexchange.").font(Typeface.font(35, weight: .medium)).tracking(-1.2)
             Text("Your local activity").foregroundStyle(Palette.muted)
             ForEach(items) { item in activityRow(item) }
         }
@@ -235,8 +235,8 @@ struct FlowHome: View {
                 Button { tab = destination } label: {
                     VStack(spacing: 6) {
                         Image(systemName: destination == .home ? "square.grid.2x2" : destination == .groups ? "person.2" : "clock.arrow.circlepath")
-                            .font(.system(size: 19))
-                        Text(destination.rawValue).font(.system(size: 10, weight: .medium))
+                            .font(Typeface.font(19, weight: .regular))
+                        Text(destination.rawValue).font(Typeface.font(10, weight: .medium))
                     }.frame(maxWidth: .infinity).padding(.vertical, 12)
                         .background(tab == destination ? Palette.lavender.opacity(0.6) : .clear, in: RoundedRectangle(cornerRadius: 19))
                 }.accessibilityAddTraits(tab == destination ? .isSelected : [])

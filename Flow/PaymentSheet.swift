@@ -20,7 +20,7 @@ struct PaymentSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 HStack {
-                    Text("PAY SOMEONE").font(.caption2).tracking(2)
+                    Text("PAY SOMEONE").font(Typeface.font(11)).tracking(2)
                     Spacer()
                     Button { dismiss() } label: {
                         Image(systemName: "xmark").frame(width: 44, height: 44)
@@ -39,50 +39,50 @@ struct PaymentSheet: View {
         .background(.white).foregroundStyle(Palette.ink)
         .buttonStyle(PressStyle())
         .frame(idealWidth: 430, minHeight: 620)
-        .interactiveDismissDisabled(phase == .receipt)
+        .sensoryFeedback(.success, trigger: phase == .receipt)
     }
 
     private var editor: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Make their\nday.").font(.system(size: 46, weight: .medium)).tracking(-2)
-            Text("Try the payment experience with demo money.").font(.subheadline).foregroundStyle(Palette.muted)
+            Text("Make their\nday.").font(Typeface.font(46, weight: .medium)).tracking(-2)
+            Text("Try the payment experience with demo money.").font(Typeface.font(14)).foregroundStyle(Palette.muted)
             entry("Recipient", placeholder: "Name or UPI ID", text: $recipient)
             entry("Amount in rupees", placeholder: "0.00", text: $amount)
-            Text("Enter a positive amount with up to two decimal places.").font(.caption).foregroundStyle(Palette.muted)
+            Text("Enter a positive amount with up to two decimal places.").font(Typeface.font(12)).foregroundStyle(Palette.muted)
             PrimaryButton(title: "Review demo payment") { phase = .review }
                 .disabled(name.isEmpty || paise == nil)
                 .opacity(name.isEmpty || paise == nil ? 0.45 : 1)
             Label("Demo only. No money will move.", systemImage: "info.circle")
-                .font(.caption).foregroundStyle(Palette.muted)
+                .font(Typeface.font(12)).foregroundStyle(Palette.muted)
         }
     }
 
     private var review: some View {
         VStack(alignment: .leading, spacing: 26) {
-            Text("Looks good?").font(.system(size: 42, weight: .medium)).tracking(-2)
+            Text("Looks good?").font(Typeface.font(42, weight: .medium)).tracking(-2)
             VStack(alignment: .leading, spacing: 20) {
                 Avatar(initials: String(name.prefix(2)).uppercased(), color: .white)
-                Text("To \(name)").font(.title3)
-                Text(money(paise ?? 0)).font(.system(size: 42, weight: .medium)).minimumScaleFactor(0.5).lineLimit(1)
-                Text("SIMULATED TRANSFER").font(.caption2).tracking(1.5)
+                Text("To \(name)").font(Typeface.font(20))
+                Text(money(paise ?? 0)).font(Typeface.font(42, weight: .medium)).minimumScaleFactor(0.5).lineLimit(1)
+                Text("SIMULATED TRANSFER").font(Typeface.font(11)).tracking(1.5)
             }.padding(26).frame(maxWidth: .infinity, alignment: .leading)
                 .background(Palette.lavender, in: RoundedRectangle(cornerRadius: 28))
             PrimaryButton(title: "Confirm demo payment", icon: "checkmark") {
                 guard phase == .review, let value = paise else { return }
                 onComplete(ActivityItem(title: name, subtitle: "Demo transfer · Just now", amount: value, symbol: "arrow.up.right", isSplit: false))
-                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.22)) { phase = .receipt }
+                withAnimation(reduceMotion ? nil : Motion.transition) { phase = .receipt }
             }
             Button("Edit details") { phase = .edit }.frame(maxWidth: .infinity, minHeight: 44)
-            Text("This preview does not call a bank or UPI app.").font(.caption).foregroundStyle(Palette.muted)
+            Text("This preview does not call a bank or UPI app.").font(Typeface.font(12)).foregroundStyle(Palette.muted)
         }
     }
 }
 
 func entry(_ label: String, placeholder: String, text: Binding<String>) -> some View {
     VStack(alignment: .leading, spacing: 10) {
-        Text(label).font(.system(size: 12, weight: .medium)).foregroundStyle(Palette.muted)
+        Text(label).font(Typeface.font(12, weight: .medium)).foregroundStyle(Palette.muted)
         TextField(placeholder, text: text)
-            .textFieldStyle(.plain).font(.system(size: 20))
+            .textFieldStyle(.plain).font(Typeface.font(20, weight: .regular))
             .padding(18).background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
             .accessibilityLabel(label)
     }
@@ -93,30 +93,39 @@ struct ReceiptView: View {
     let recipient: String
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var appeared = false
+    var showsFinalState = false
     var body: some View {
         VStack(spacing: 24) {
             ZStack {
                 Circle().stroke(Palette.lavender, lineWidth: 1.5)
                     .frame(width: 156, height: 156)
-                    .scaleEffect(appeared || reduceMotion ? 1 : 0.9)
+                    .scaleEffect(appeared || reduceMotion || showsFinalState ? 1 : 0.92)
+                Circle().stroke(Palette.lime, lineWidth: 1)
+                    .frame(width: 184, height: 184)
+                    .scaleEffect(appeared || reduceMotion || showsFinalState ? 1 : 0.92)
+                    .opacity(appeared || showsFinalState ? 0.7 : 0)
                 Circle().fill(Palette.lime).frame(width: 116, height: 116)
-                Checkmark().trim(from: 0, to: appeared ? 1 : 0)
+                Checkmark().trim(from: 0, to: appeared || showsFinalState ? 1 : 0)
                     .stroke(Palette.ink, style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round))
                     .frame(width: 44, height: 34)
             }.padding(.top, 18).accessibilityHidden(true)
             VStack(spacing: 8) {
-                Text("A little joy, sent.").font(.system(size: 31, weight: .medium)).tracking(-1)
-                Text("Demo payment complete").font(.subheadline).foregroundStyle(Palette.muted)
+                Text("All squared up.").font(Typeface.font(31, weight: .medium)).tracking(-1)
+                Text("Demo payment complete").font(Typeface.font(14)).foregroundStyle(Palette.muted)
             }
-            Text(money(amount)).font(.system(size: 48, weight: .medium, design: .rounded)).minimumScaleFactor(0.5).lineLimit(1)
-            Text("to \(recipient)").foregroundStyle(Palette.muted)
-            Divider()
-            Label("Saved to your demo activity", systemImage: "checkmark.seal").font(.caption)
-            Text("No real money was transferred.").font(.caption).foregroundStyle(Palette.muted)
+            Text(money(amount)).font(Typeface.font(48, weight: .medium)).minimumScaleFactor(0.5).lineLimit(1)
+            Text("to \(recipient)").font(Typeface.font(15)).foregroundStyle(Palette.muted)
+            HStack {
+                Text("PAYMENT TYPE").font(Typeface.font(10, weight: .medium)).tracking(1)
+                Spacer()
+                Text("Demo transfer").font(Typeface.font(13, weight: .medium))
+            }.padding(18).background(Palette.lavender.opacity(0.45), in: RoundedRectangle(cornerRadius: 18))
+            Label("Saved to your demo activity", systemImage: "checkmark.seal").font(Typeface.font(12))
+            Text("No real money was transferred.").font(Typeface.font(12)).foregroundStyle(Palette.muted)
         }.frame(maxWidth: .infinity)
             .padding(.bottom, 22)
             .onAppear {
-                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.28)) { appeared = true }
+                withAnimation(reduceMotion ? nil : Motion.receipt) { appeared = true }
             }
     }
 }

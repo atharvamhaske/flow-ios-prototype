@@ -2,10 +2,12 @@ import SwiftUI
 
 @main
 struct FlowApp: App {
+    init() { Typeface.register() }
     var body: some Scene {
         WindowGroup {
             FlowHome()
                 .preferredColorScheme(.light)
+                .font(Typeface.font(15))
                 #if os(macOS)
                 .frame(minWidth: 390, idealWidth: 430, maxWidth: 560, minHeight: 740)
                 #endif
