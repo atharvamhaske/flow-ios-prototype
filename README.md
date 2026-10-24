@@ -8,13 +8,13 @@ The adjacent `Rello Preview.app` is a locally signed Apple Silicon Mac build. It
 
 ## Available
 
-- Home, sample groups and locally persisted activity.
+- Home and locally persisted activity, starting empty. Recent people come from your own entries.
 - Demo payment: recipient, amount, review, animated receipt.
 - Equal-split preview with exact paise allocation and local expense recording.
 
 ## Limits
 
-No real UPI transfers, bank connection, QR scanner, group sync or per-person debt ledger yet. Transfers are explicitly simulated. Sample groups do not represent shared online accounts. iPhone builds and interactive UI tests require full Xcode and remain unverified here.
+No real UPI transfers, bank connection, QR scanner, group sync or per-person debt ledger yet. Transfers are explicitly simulated. Groups show an empty state until group support is implemented. Legacy seeded activity is removed on load; user-created entries are preserved. iPhone builds and interactive UI tests require full Xcode and remain unverified here.
 
 Run `./check.sh` for amount/split checks and Mac compilation. UI inspiration: the supplied screenshots and Emil Kowalski's design engineering, library selection and Swift skills. His web libraries are translated into native SwiftUI patterns; no web dependency is bundled. Appinspo's generator was inspected but did not produce a skill in this session.
 

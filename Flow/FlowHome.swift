@@ -7,14 +7,17 @@ struct ActivityItem: Identifiable, Codable {
     let amount: Int
     let symbol: String
     let isSplit: Bool
-}
 
-enum DemoData {
-    static let activity = [
-        ActivityItem(title: "Sunday brunch", subtitle: "Weekend people · You paid", amount: 184000, symbol: "cup.and.saucer", isSplit: true),
-        ActivityItem(title: "Aarav Shah", subtitle: "Demo transfer · Yesterday", amount: 45000, symbol: "arrow.up.right", isSplit: false),
-        ActivityItem(title: "Groceries", subtitle: "Our place · You paid", amount: 126000, symbol: "basket", isSplit: true)
-    ]
+    var isLegacySample: Bool {
+        switch (title, subtitle, amount, symbol, isSplit) {
+        case ("Sunday brunch", "Weekend people · You paid", 184000, "cup.and.saucer", true),
+             ("Aarav Shah", "Demo transfer · Yesterday", 45000, "arrow.up.right", false),
+             ("Groceries", "Our place · You paid", 126000, "basket", true):
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 struct FlowHome: View {
@@ -23,7 +26,8 @@ struct FlowHome: View {
     @State private var tab = Tab.home
     @State private var sheet: Sheet?
     @State private var recipientName = ""
-    @State private var items = DemoData.activity
+    @State private var items: [ActivityItem] = []
+    @State private var storageReady = true
     @State private var notice: String?
     @AppStorage("flow.demo.activity") private var savedActivity = Data()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -60,8 +64,18 @@ struct FlowHome: View {
         } message: { Text(notice ?? "") }
         .onAppear {
             guard !savedActivity.isEmpty else { return }
-            do { items = try JSONDecoder().decode([ActivityItem].self, from: savedActivity) }
-            catch { notice = "Your saved demo activity could not be read. Sample activity is shown; the saved data has not been overwritten." }
+            do {
+                let stored = try JSONDecoder().decode([ActivityItem].self, from: savedActivity)
+                let cleaned = stored.filter { !$0.isLegacySample }
+                if cleaned.count != stored.count {
+                    savedActivity = try JSONEncoder().encode(cleaned)
+                }
+                items = cleaned
+                storageReady = true
+            } catch {
+                storageReady = false
+                notice = "Your saved activity could not be read. It has been preserved. New entries cannot be saved until it is recovered."
+            }
         }
     }
 
@@ -75,6 +89,10 @@ struct FlowHome: View {
     }
 
     private func append(_ item: ActivityItem) {
+        guard storageReady else {
+            notice = "Your previous activity needs recovery before new entries can be saved."
+            return
+        }
         let updated = [item] + items
         do {
             let data = try JSONEncoder().encode(updated)
@@ -111,12 +129,10 @@ struct FlowHome: View {
             VStack(alignment: .leading, spacing: 14) {
                 sectionTitle("Your people", trailing: "PAY A FRIEND")
                 HStack {
-                    person("Aarav", initials: "AS", color: Palette.lavender)
-                    Spacer()
-                    person("Meera", initials: "MK", color: Palette.lime)
-                    Spacer()
-                    person("Riya", initials: "RP", color: Palette.lavender)
-                    Spacer()
+                    ForEach(recentRecipients, id: \.self) { name in
+                        person(name, initials: String(name.prefix(2)).uppercased(), color: Palette.lavender)
+                        Spacer()
+                    }
                     Button { recipientName = ""; sheet = .pay } label: {
                         VStack(spacing: 8) {
                             Image(systemName: "plus").frame(width: 44, height: 44).background(Palette.surface, in: Circle())
@@ -131,6 +147,7 @@ struct FlowHome: View {
                     Spacer()
                     Button("View all") { tab = .activity }.font(Typeface.font(12, weight: .regular)).underline()
                 }
+                if items.isEmpty { emptyActivity }
                 ForEach(items.prefix(3)) { item in activityRow(item) }
             }
         }
@@ -204,17 +221,10 @@ struct FlowHome: View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Better\ntogether.").font(Typeface.font(46, weight: .medium)).tracking(-1.2)
             Text("Keep the memories. Split the rest.").foregroundStyle(Palette.muted)
-            ForEach(Array(["Weekend people", "Our place"].enumerated()), id: \.offset) { index, title in
-                VStack(alignment: .leading, spacing: 24) {
-                    HStack { Image(systemName: index == 0 ? "sun.max" : "house").font(Typeface.font(30, weight: .regular)); Spacer(); Text("4 PEOPLE").font(Typeface.font(11)).tracking(1) }
-                    Text(title).font(Typeface.font(28, weight: .medium)).tracking(-1)
-                    Button { sheet = .split } label: {
-                        HStack { Text("Add a shared expense"); Spacer(); Image(systemName: "plus") }.font(Typeface.font(13, weight: .regular))
-                    }
-                }.padding(26).background(index == 0 ? Palette.lavender : Palette.lime, in: RoundedRectangle(cornerRadius: 28))
-            }
-            Text("Sample groups · Expenses are saved on this device.")
-                .font(Typeface.font(12)).foregroundStyle(Palette.muted)
+            Text("No groups yet").font(Typeface.font(23, weight: .medium))
+            Text("You can record an expense now. Shared groups and member balances are not connected yet.")
+                .font(Typeface.font(14)).foregroundStyle(Palette.muted)
+            PrimaryButton(title: "Split a bill", icon: "plus") { sheet = .split }
         }
     }
 
@@ -222,8 +232,27 @@ struct FlowHome: View {
         VStack(alignment: .leading, spacing: 22) {
             Text("Every little\nexchange.").font(Typeface.font(35, weight: .medium)).tracking(-1.2)
             Text("Your local activity").foregroundStyle(Palette.muted)
+            if items.isEmpty { emptyActivity }
             ForEach(items) { item in activityRow(item) }
         }
+    }
+
+    private var recentRecipients: [String] {
+        var names: [String] = []
+        for item in items where !item.isSplit {
+            if !names.contains(item.title) { names.append(item.title) }
+            if names.count == 3 { break }
+        }
+        return names
+    }
+
+    private var emptyActivity: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("A fresh start.").font(Typeface.font(19, weight: .medium))
+            Text("Your recorded expenses and demo payments will appear here. No bank transactions are connected.")
+                .font(Typeface.font(13)).foregroundStyle(Palette.muted)
+        }.padding(20).frame(maxWidth: .infinity, alignment: .leading)
+            .background(Palette.surface, in: RoundedRectangle(cornerRadius: 20))
     }
 
     private var navigation: some View {
