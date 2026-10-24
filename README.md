@@ -18,4 +18,6 @@ No real UPI transfers, bank connection, QR scanner, group sync or per-person deb
 
 Run `./check.sh` for amount/split checks and Mac compilation. UI inspiration: the supplied screenshots and Emil Kowalski's design engineering, library selection and Swift skills. His web libraries are translated into native SwiftUI patterns; no web dependency is bundled. Appinspo's generator was inspected but did not produce a skill in this session.
 
-Inter is bundled under the SIL Open Font License; see `Flow/Resources/OFL.txt`. Motion uses shared 140–280 ms timing curves and respects Reduce Motion.
+Inter is bundled under the SIL Open Font License; see `Flow/Resources/OFL.txt`. Interaction motion uses shared 140–280 ms timing curves; the one-shot receipt reveal lasts 500 ms and respects Reduce Motion.
+
+Payment-card artwork is an AI-generated bundled asset. The receipt dispenser is native SwiftUI, with a static Reduce Motion state.

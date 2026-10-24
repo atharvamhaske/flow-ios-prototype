@@ -152,13 +152,10 @@ struct FlowHome: View {
                     .contentTransition(.numericText())
             }
             HStack {
-                Text("Good times. Fair shares.").font(Typeface.font(12, weight: .regular))
+                Text("Good times.\nFair shares.").font(Typeface.font(15, weight: .medium)).lineSpacing(3)
                 Spacer()
-                HStack(spacing: -12) {
-                    Avatar(initials: "AS", color: Palette.lime)
-                    Avatar(initials: "MK")
-                    Avatar(initials: "+2", color: .white)
-                }
+                PaymentArtwork().frame(width: 145, height: 98)
+                    .rotationEffect(.degrees(-5))
             }
         }
         .padding(22)

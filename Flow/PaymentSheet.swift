@@ -44,7 +44,11 @@ struct PaymentSheet: View {
 
     private var editor: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Make their\nday.").font(Typeface.font(46, weight: .medium)).tracking(-2)
+            HStack {
+                Text("Make their\nday.").font(Typeface.font(36, weight: .medium)).tracking(-1.2)
+                Spacer(minLength: 0)
+                PaymentArtwork().frame(width: 145, height: 135)
+            }
             Text("Try the payment experience with demo money.").font(Typeface.font(14)).foregroundStyle(Palette.muted)
             entry("Recipient", placeholder: "Name or UPI ID", text: $recipient)
             entry("Amount in rupees", placeholder: "0.00", text: $amount)
@@ -96,19 +100,8 @@ struct ReceiptView: View {
     var showsFinalState = false
     var body: some View {
         VStack(spacing: 24) {
-            ZStack {
-                Circle().stroke(Palette.lavender, lineWidth: 1.5)
-                    .frame(width: 156, height: 156)
-                    .scaleEffect(appeared || reduceMotion || showsFinalState ? 1 : 0.92)
-                Circle().stroke(Palette.lime, lineWidth: 1)
-                    .frame(width: 184, height: 184)
-                    .scaleEffect(appeared || reduceMotion || showsFinalState ? 1 : 0.92)
-                    .opacity(appeared || showsFinalState ? 0.7 : 0)
-                Circle().fill(Palette.lime).frame(width: 116, height: 116)
-                Checkmark().trim(from: 0, to: appeared || showsFinalState ? 1 : 0)
-                    .stroke(Palette.ink, style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round))
-                    .frame(width: 44, height: 34)
-            }.padding(.top, 18).accessibilityHidden(true)
+            ReceiptDispenser(progress: appeared || showsFinalState || reduceMotion ? 1 : 0)
+                .accessibilityHidden(true)
             VStack(spacing: 8) {
                 Text("All squared up.").font(Typeface.font(31, weight: .medium)).tracking(-1)
                 Text("Demo payment complete").font(Typeface.font(14)).foregroundStyle(Palette.muted)
@@ -126,7 +119,7 @@ struct ReceiptView: View {
         }.frame(maxWidth: .infinity)
             .padding(.bottom, 22)
             .onAppear {
-                withAnimation(reduceMotion ? nil : Motion.receipt) { appeared = true }
+                withAnimation(reduceMotion ? nil : Motion.dispense) { appeared = true }
             }
     }
 }
@@ -138,5 +131,54 @@ struct Checkmark: Shape {
             path.addLine(to: CGPoint(x: rect.width * 0.36, y: rect.maxY))
             path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
         }
+    }
+}
+
+
+struct ReceiptDispenser: View {
+    var progress: CGFloat
+    var body: some View {
+        ZStack(alignment: .top) {
+            RoundedRectangle(cornerRadius: 25)
+                .fill(Palette.lavender.gradient)
+                .frame(width: 270, height: 96)
+                .overlay(alignment: .topLeading) {
+                    HStack(spacing: 5) {
+                        Circle().fill(Palette.ink).frame(width: 5, height: 5)
+                        Text("FLOW RECEIPT").font(Typeface.font(9, weight: .medium)).tracking(1.5)
+                    }.padding(18)
+                }
+            Capsule().fill(Palette.ink).frame(width: 224, height: 12).offset(y: 60)
+            VStack(spacing: 12) {
+                HStack {
+                    Text("ALL SQUARE").font(Typeface.font(9, weight: .semibold)).tracking(1.2)
+                    Spacer()
+                    Image(systemName: "arrow.up.right")
+                }
+                ZStack {
+                    Circle().fill(Palette.lime).frame(width: 52, height: 52)
+                    Checkmark().trim(from: 0, to: progress)
+                        .stroke(Palette.ink, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                        .frame(width: 20, height: 16)
+                }
+                Rectangle().fill(Palette.ink.opacity(0.12)).frame(height: 1)
+                HStack(spacing: 4) {
+                    ForEach(0..<24) { index in
+                        Rectangle().fill(Palette.ink.opacity(0.65))
+                            .frame(width: index.isMultiple(of: 3) ? 3 : 1, height: 20)
+                    }
+                }
+                Text("DEMO · NO MONEY MOVED").font(Typeface.font(8, weight: .medium)).tracking(0.4)
+            }
+            .padding(18).frame(width: 198)
+            .background(.white, in: RoundedRectangle(cornerRadius: 4))
+            .overlay(RoundedRectangle(cornerRadius: 4).stroke(Palette.ink.opacity(0.06)))
+            .shadow(color: Palette.ink.opacity(0.09), radius: 10, y: 8)
+            .offset(y: -205 * (1 - progress))
+            .frame(height: 210, alignment: .top)
+            .clipped()
+            .padding(.top, 66)
+            Capsule().fill(Palette.ink.opacity(0.7)).frame(width: 224, height: 3).offset(y: 60)
+        }.frame(maxWidth: .infinity).frame(height: 285)
     }
 }

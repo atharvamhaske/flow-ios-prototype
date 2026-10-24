@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreText
+import ImageIO
 
 enum Palette {
     static let ink = Color(red: 0.10, green: 0.11, blue: 0.10)
@@ -76,5 +77,34 @@ enum Typeface {
 enum Motion {
     static let press = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.14)
     static let transition = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.22)
+    static let dispense = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.5)
     static let receipt = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.28)
+}
+
+@MainActor
+enum PaymentArt {
+    private static var loadedImage: CGImage?
+
+    static func load(from url: URL? = nil) {
+        let resource = url ?? Bundle.main.url(forResource: "payment-cards", withExtension: "png", subdirectory: "Resources")
+            ?? Bundle.main.url(forResource: "payment-cards", withExtension: "png")
+        guard let resource,
+              let source = CGImageSourceCreateWithURL(resource as CFURL, nil),
+              let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+            fatalError("The bundled payment illustration could not be loaded")
+        }
+        loadedImage = image
+    }
+
+    static var image: CGImage {
+        guard let loadedImage else { fatalError("Payment artwork must be loaded at app startup") }
+        return loadedImage
+    }
+}
+
+struct PaymentArtwork: View {
+    var body: some View {
+        Image(decorative: PaymentArt.image, scale: 1)
+            .resizable().scaledToFit().accessibilityHidden(true)
+    }
 }

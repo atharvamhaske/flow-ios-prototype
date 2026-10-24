@@ -2,7 +2,10 @@ import SwiftUI
 
 @main
 struct FlowApp: App {
-    init() { Typeface.register() }
+    init() {
+        Typeface.register()
+        PaymentArt.load()
+    }
     var body: some Scene {
         WindowGroup {
             FlowHome()
