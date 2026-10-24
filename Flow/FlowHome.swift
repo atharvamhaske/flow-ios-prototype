@@ -87,7 +87,7 @@ struct FlowHome: View {
         HStack {
             HStack(spacing: 6) {
                 Image(systemName: "arrow.up.forward.circle.fill").font(Typeface.font(25, weight: .regular))
-                Text("flow").font(Typeface.font(30, weight: .semibold)).tracking(-1.6)
+                Text("rello").font(Typeface.font(30, weight: .semibold)).tracking(-1.6)
             }
             Spacer()
             Text("LOCAL DEMO").font(Typeface.font(9, weight: .semibold)).tracking(1.2)

@@ -1,10 +1,10 @@
-# Flow
+# Rello
 
 A SwiftUI UI prototype for payments and shared expenses. Bundled Inter typography, white, soft lavender and pale lime; native sheets, press feedback and an animated demo receipt with Reduce Motion support.
 
-Open `Flow.xcodeproj` in full Xcode. Select an iPhone Simulator and Run. For a physical iPhone, select your Personal Team under Signing & Capabilities. iOS 17+; macOS 14+.
+Open `Flow.xcodeproj` in full Xcode. Select the Rello target, an iPhone Simulator and Run. For a physical iPhone, select your Personal Team under Signing & Capabilities. iOS 17+; macOS 14+.
 
-The adjacent `Flow Preview.app` is a locally signed Apple Silicon Mac build. It is not notarized or intended for distribution.
+The adjacent `Rello Preview.app` is a locally signed Apple Silicon Mac build. It is not notarized or intended for distribution.
 
 ## Available
 

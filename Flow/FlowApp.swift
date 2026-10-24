@@ -1,13 +1,13 @@
 import SwiftUI
 
 @main
-struct FlowApp: App {
+struct RelloApp: App {
     init() {
         Typeface.register()
         PaymentArt.load()
     }
     var body: some Scene {
-        WindowGroup {
+        WindowGroup("Rello") {
             FlowHome()
                 .preferredColorScheme(.light)
                 .font(Typeface.font(15))
